@@ -1,26 +1,27 @@
+const router = require('../routes/route');
 
-const mid1= function ( req, res, next) {
-    req.falana= "hi there. i am adding something new to the req object"
-    console.log("Hi I am a middleware named Mid1")
+
+var requestIp = require('request-ip');
+var ipMiddleware = function(req, res, next) {
+    var clientIp = requestIp.getClientIp(req); // on localhost > 127.0.0.1
+    console.log(clientIp);
+    
+    next();
+};
+
+
+const timestamp= require('time-stamp')
+const timeStamp = function(req,res,next) {
+    console.log(timestamp("YYYY/MM/DD:mm:ss"))
     next()
 }
-
-const mid2= function ( req, res, next) {
-    console.log("Hi I am a middleware named Mid2")
-    next()
+const path = function(req,res,next) {
+    console.log(req.route.path)
+    res.send("Middleware Asiggnment")
 }
 
-const mid3= function ( req, res, next) {
-    console.log("Hi I am a middleware named Mid3")
-    next()
-}
 
-const mid4= function ( req, res, next) {
-    console.log("Hi I am a middleware named Mid4")
-    next()
-}
 
-module.exports.mid1= mid1
-module.exports.mid2= mid2
-module.exports.mid3= mid3
-module.exports.mid4= mid4
+module.exports.ipMiddleware= ipMiddleware
+module.exports.timeStamp=timeStamp
+module.exports.path= path
