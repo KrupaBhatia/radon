@@ -31,7 +31,7 @@ const loginUser = async function (req, res) {
   let token = jwt.sign(
     {
       userId: user._id.toString(),
-      batch: "thorium",
+      batch: "radon",
       organisation: "FunctionUp",
     },
     "functionup-radon"
@@ -71,20 +71,59 @@ const updateUser = async function (req, res) {
 // Check if the token is present
 // Check if the token present is a valid token
 // Return a different error message in both these cases
+let token = req.headers["x-Auth-token"];
+  if (!token) token = req.headers["x-auth-token"];
+
+  //If no token is present in the request header return error
+  if (!token) return res.send({ status: false, msg: "token " });
+
+
+  console.log(token);
+  let decodedToken = jwt.verify(token, "functionup-radon");
+  if (!decodedToken)
+     res.send({ status: false, msg: "invalid" });
 
   let userId = req.params.userId;
-  let user = await userModel.findById(userId);
+  let userData = req.body
+  let updateUser= await userModel.findOneAndUpdate({_id: userId},userData);
+    res.send({data:updateUser})
   //Return an error if no user with the given id exists in the db
-  if (!user) {
-    return res.send("No such user exists");
+  if (!updateUser) {
+     res.send("No such user exists");
   }
+}
 
-  let userData = req.body;
-  let updatedUser = await userModel.findOneAndUpdate({ _id: userId }, userData);
-  res.send({ status: updatedUser, data: updatedUser });
-};
-
+const deleteUser = async function (req, res) {
+  // Do the same steps here:
+  // Check if the token is present
+  // Check if the token present is a valid token
+  // Return a different error message in both these cases
+  let token = req.headers["x-Auth-token"];
+    if (!token) token = req.headers["x-auth-token"];
+  
+    //If no token is present in the request header return error
+    if (!token) return res.send({ status: false, msg: "token " });
+  
+  
+    console.log(token);
+    let decodedToken = jwt.verify(token, "functionup-radon");
+    if (!decodedToken)
+       res.send({ status: false, msg: "invalid" });
+  
+    let userId = req.params.userId;
+    let userData = req.body
+    let deleteUser= await userModel.findOneAndDelete({_id: userId},userData);
+      res.send({data:deleteUser})
+    //Return an error if no user with the given id exists in the db
+    if (!deleteUser) {
+       res.send("No such user exists");
+    }
+  }
+  
+  
 module.exports.createUser = createUser;
+module.exports.loginUser=loginUser;
 module.exports.getUserData = getUserData;
 module.exports.updateUser = updateUser;
-module.exports.loginUser = loginUser;
+module.exports.deleteUser = deleteUser;
+
